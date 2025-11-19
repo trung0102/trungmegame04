@@ -100,5 +100,6 @@ InitTestScene*.unity*
 
 .vscode/
 
-Assets/Resources/
+# Assets/Resources/Hex World Tiles - Free/
+Assets/Resources/Map/
 Assets/Scripts/
