@@ -1,10 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class DiceController : MonoBehaviour
 {
     public Dice dice1;     
-    public Dice dice2;      
+    public Dice dice2;    
+    public Player player;
+    public CatanMap catanMap;  
     private bool isRolling = false;
     public int finalValue  { get; private set; }
 
@@ -39,5 +42,20 @@ public class DiceController : MonoBehaviour
         finalValue = dice1.finalValue + dice2.finalValue;
         Debug.Log("Tổng 2 dice: " + finalValue);
         isRolling = false;
+        this.CollectResources();
+    }
+
+    private void CollectResources()
+    {
+        List<ResourceType> listRes = catanMap.GetResourcesByDiceNumber(finalValue);
+        if (listRes.Count == 0)
+        {
+            Debug.Log("Di chuyển Robber"); 
+            return;
+        }
+        foreach (var res in listRes)
+        {
+            player.AddResource(res);
+        }   
     }
 }
