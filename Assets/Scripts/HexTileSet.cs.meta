@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 702589ee023354942b0908d90894c00e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - woodTile: {fileID: 11400000, guid: c7da46adc1fbdb0408341caee4b18e15, type: 2}
+  - brickTile: {fileID: 11400000, guid: 8ed1ff4d7b8c1e5408beb637d684f2c7, type: 2}
+  - wheatTile: {fileID: 11400000, guid: 1a883e90d082bec4cbd6785da0ce7695, type: 2}
+  - sheepTile: {fileID: 11400000, guid: 56f8605c7b81e754a82fad2712af9bfa, type: 2}
+  - oreTile: {fileID: 11400000, guid: c225ae680adffea4bbbe270ab4c3019a, type: 2}
+  - desertTile: {fileID: 11400000, guid: a2c68c64039d89f439574ae232972b64, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
