@@ -1408,7 +1408,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CatanMap
   tileMap: {fileID: 1186855448}
-  numMap: {fileID: 443874713}
+  numMap: {fileID: 1186855448}
   tileSet: {fileID: 11400000, guid: 662fe5af03b40294192224d06f0a4e98, type: 2}
   changeTileAtPosition: 0
 --- !u!1 &1186855445
@@ -1819,6 +1819,53 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1455672747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1455672749}
+  - component: {fileID: 1455672748}
+  m_Layer: 0
+  m_Name: HouseManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1455672748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455672747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ed5c9f482235394c901d25f20e4f7de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HousePlacement
+  tileMap: {fileID: 1186855448}
+  housePrefab: {fileID: 6362377333297282075, guid: 6e15b6a3c6304c040be400d7f440c72a, type: 3}
+  circlePrefab: {fileID: 5493920028463568258, guid: 1002772243a289e4a95eb9db23ec11cd, type: 3}
+--- !u!4 &1455672749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455672747}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.72923, y: 0.32554, z: -3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1831,3 +1878,4 @@ SceneRoots:
   - {fileID: 610007656}
   - {fileID: 529791929}
   - {fileID: 326876892}
+  - {fileID: 1455672749}

@@ -42,18 +42,18 @@ public class CatanMap : MonoBehaviour
             Vector3Int cellPos = tileMap.WorldToCell(mouseWorldPos); // Lấy ô hex
             TileBase clickedTile = tileMap.GetTile(cellPos); // Lấy Tile hiện tại
 
-            if (clickedTile != null)
-            {   
-                // string info = "Khong co gi ca";
-                foreach (var product in productions)
-                {
-                    if(product.position == cellPos)
-                    {
-                        Debug.Log($"Clicked Hex: {cellPos}, Information: {product.PrintInfo()}");
-                    }
-                }
-                // TODO: Hiển thị UI hoặc info khác
-            }        
+            // if (clickedTile != null)
+            // {   
+            //     // string info = "Khong co gi ca";
+            //     foreach (var product in productions)
+            //     {
+            //         if(product.position == cellPos)
+            //         {
+            //             Debug.Log($"Clicked Hex: {cellPos}, Information: {product.PrintInfo()}");
+            //         }
+            //     }
+            //     // TODO: Hiển thị UI hoặc info khác
+            // }        
             if(changeTileAtPosition) ChangeTileAtPosition(cellPos, ResourceType.Wood);    
         }
     }
