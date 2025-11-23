@@ -436,7 +436,7 @@ Transform:
   m_GameObject: {fileID: 443874710}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.6, y: 0.01, z: -1}
+  m_LocalPosition: {x: -1.6, y: 0.01, z: 1}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1851,6 +1851,7 @@ MonoBehaviour:
   tileMap: {fileID: 1186855448}
   housePrefab: {fileID: 6362377333297282075, guid: 6e15b6a3c6304c040be400d7f440c72a, type: 3}
   circlePrefab: {fileID: 5493920028463568258, guid: 1002772243a289e4a95eb9db23ec11cd, type: 3}
+  vertexClickRadius: 0.5
 --- !u!4 &1455672749
 Transform:
   m_ObjectHideFlags: 0
