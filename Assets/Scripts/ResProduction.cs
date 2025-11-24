@@ -11,6 +11,10 @@ public class ResProduction : MonoBehaviour
         this.information = information;
         this.position = position;
     }
+    public (int num, ResourceType name) GenerateResources()
+    {
+        return information.blocked? (0, information.resource) : (1, information.resource); 
+    }
     
     public string PrintInfo()
     {

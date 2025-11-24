@@ -16,6 +16,7 @@ public class CatanMap : MonoBehaviour
     public GameObject cityPrefab;
     public GameObject roadPrefab;
     private bool changeTileAtPosition = false;
+    private BuildingType building;
     public static CatanMap instance;
 
     protected List<ResProduction> productions = new List<ResProduction>();
@@ -25,19 +26,6 @@ public class CatanMap : MonoBehaviour
     private void ToggleChangeTile()
     {
         changeTileAtPosition = !changeTileAtPosition;
-    }
-    private bool xaynha1 = false;
-    private bool xaynha2 = false;
-
-    [ContextMenu("Xay nha 1")]
-    private void XayNha1()
-    {
-        xaynha1 = !xaynha1;
-    }
-    [ContextMenu("Xay nha 2")]
-    private void XayNha2()
-    {
-        xaynha2 = !xaynha2;
     }
 
     protected void Awake()
@@ -65,6 +53,7 @@ public class CatanMap : MonoBehaviour
         //     Debug.Log($"--- {i} --- {v.PrintInfo()}");
         //     i++;
         // }
+        building = BuildingType.None;
     }
 
     void Update(){
@@ -88,7 +77,7 @@ public class CatanMap : MonoBehaviour
             //     }
             //     // TODO: Hiển thị UI hoặc info khác
             // }  
-            if(xaynha1 || xaynha2)
+            if(building != BuildingType.None)
             {
                 Vector3 chosenVertex = FindClosestVertex(mouseWorldPos);
                 if (chosenVertex == Vector3.zero)
@@ -96,14 +85,7 @@ public class CatanMap : MonoBehaviour
                    Debug.Log($"Vị trí không phù hợp"); return;
                 } 
                 Vertex vertex = vertexDict[chosenVertex];
-                if (xaynha1)
-                {
-                    vertexDict[chosenVertex].PlaceBuilding(BuildingType.Settlement, Player.instance);
-                }
-                else if (xaynha2)
-                {
-                    vertexDict[chosenVertex].PlaceBuilding(BuildingType.City, Player.instance);
-                }
+                vertexDict[chosenVertex].PlaceBuilding(building, Player.instance);
 
             }
             if(changeTileAtPosition) ChangeTileAtPosition(cellPos, ResourceType.Wood);    
@@ -127,18 +109,16 @@ public class CatanMap : MonoBehaviour
         
     }
 
-    public List<ResourceType> GetResourcesByDiceNumber(int diceNumber)
+    public void OnClickBuilding(BuildingType build)
+    {
+        building = build;
+    }
+    public void GetResourcesByDiceNumber(int diceNumber)
     {   
-        List<ResourceType> listRes = new List<ResourceType>();
-        foreach (var prod in productions)
+        foreach (var kvp in vertexDict)
         {
-            if(prod.information.numberToken == diceNumber)
-            {
-                listRes.Add(prod.information.resource);
-                Debug.Log($"Add: {prod.information.resource}");
-            }
+            kvp.Value.CollectResources(diceNumber);
         }
-        return listRes;
     }
 
     private void GenerateBuildableVertices(ResProduction res)

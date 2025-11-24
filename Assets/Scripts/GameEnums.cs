@@ -12,7 +12,8 @@ public enum ResourceType
 }
 
 public enum BuildingType
-{
+{   
+    None,
     Settlement,
     City,
     Road
