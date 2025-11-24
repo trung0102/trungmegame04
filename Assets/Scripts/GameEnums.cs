@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public enum ResourceType
 {
@@ -10,7 +11,7 @@ public enum ResourceType
     Desert
 }
 
-public enum BuildType
+public enum BuildingType
 {
     Settlement,
     City,

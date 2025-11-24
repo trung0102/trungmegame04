@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
     public static Player instance;
     [SerializeField] protected List<Resource> resources = new List<Resource>();
 
+    public Color color = Color.red;
+
     protected void Awake()
     {
         if(Player.instance != null) Debug.LogError("On 1 Player");
