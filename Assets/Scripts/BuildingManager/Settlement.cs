@@ -19,6 +19,11 @@ public class Settlement : Building
         return false;
     }
 
+    public override void GiveResource(ResProduction res)
+    {   
+        var resource = res.GenerateResources();
+        this.owner.AddResource(resource.name, resource.num * this.GetProductionAmount());
+    }
     public virtual int GetProductionAmount()
     {
         return 1;

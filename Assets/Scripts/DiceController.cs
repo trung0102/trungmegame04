@@ -47,15 +47,11 @@ public class DiceController : MonoBehaviour
 
     private void CollectResources()
     {
-        List<ResourceType> listRes = catanMap.GetResourcesByDiceNumber(finalValue);
-        if (listRes.Count == 0)
+        if (finalValue == 7)
         {
             Debug.Log("Di chuyển Robber"); 
             return;
         }
-        foreach (var res in listRes)
-        {
-            player.AddResource(res);
-        }   
+        catanMap.GetResourcesByDiceNumber(finalValue); 
     }
 }

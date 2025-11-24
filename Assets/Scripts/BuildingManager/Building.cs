@@ -13,6 +13,7 @@ public abstract class Building : MonoBehaviour
     }
 
     public abstract bool CanPlace(BuildingType type);
+    public abstract void GiveResource(ResProduction res);
 
     public virtual string PrintInfo()
     {

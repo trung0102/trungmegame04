@@ -90,4 +90,16 @@ public class Vertex
         build.GetComponent<SpriteRenderer>().color = owner.color;
         building = build;    
     }
+
+    public void CollectResources(int diceNumber)
+    {   
+        if(!building) return;
+        foreach (var prod in adjacentProduct)
+        {
+            if(prod.information.numberToken == diceNumber)
+            {
+                this.building.GiveResource(prod);
+            }
+        }
+    }
 }
