@@ -7,7 +7,7 @@ public class City : Settlement
     public override Dictionary<ResourceType, int> Cost => new Dictionary<ResourceType, int>()
     {
         { ResourceType.Wheat, 2 },
-        { ResourceType.Ore, 3 }
+        { ResourceType.Brick, 3 }
     };
 
     public override int GetProductionAmount()
@@ -23,6 +23,6 @@ public class City : Settlement
 
     public override string PrintInfo()
     {
-        return "Cityyyyy";
+        return $"| [City] owner:{owner.playerIndex}";
     }
 }

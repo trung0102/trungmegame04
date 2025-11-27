@@ -1,61 +1,83 @@
 using UnityEngine;
 
 using UnityEngine.UI;
+using Mirror;
 
-public class ButtonManager : MonoBehaviour
+public class ButtonManager : NetworkBehaviour
 {
     [Header("Buttons")]
-    public GameObject button1; // Build Settlement
-    public GameObject button2; // Build City
-    // public GameObject button3; // Trade
+    public GameObject buildSettlement; // Build Settlement
+    public GameObject buildCity; // Build City
+    public GameObject buildRoad; // Build Road
 
     private bool isVisible = false;
+    public static ButtonManager instance;  
+    private PlayerNetwork localPlayer;
+    protected void Awake()
+    {   
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        if(ButtonManager.instance != null) Debug.LogError("Only 1 ButtonManager allowed!");
+        ButtonManager.instance = this;
+        
+        buildSettlement.SetActive(false);
+        buildCity.SetActive(false);
+        buildRoad.SetActive(false);
+    }
 
     void Start()
     {
         // Ẩn các nút con lúc đầu
-        button1.SetActive(false);
-        button2.SetActive(false);
-        // button3.SetActive(false);
+        buildSettlement.SetActive(false);
+        buildCity.SetActive(false);
+        buildRoad.SetActive(false);
+    }
+    public void SetLocalPlayer(PlayerNetwork player)
+    {
+        localPlayer = player;
     }
     public void ToggleButtons()
     {
         isVisible = !isVisible;
 
-        button1.SetActive(isVisible);
-        button2.SetActive(isVisible);
+        buildSettlement.SetActive(isVisible);
+        buildCity.SetActive(isVisible);
+        buildRoad.SetActive(isVisible);
         if (!isVisible)
         {
-            CatanMap.instance.OnClickBuilding(BuildingType.None);
+            localPlayer.OnClickNone();
         }
-        // button3.SetActive(isVisible);
     }
 
     public void OnBuildSettlement()
     {
-        Debug.Log("Build Settlement clicked!");
-        CatanMap.instance.OnClickBuilding(BuildingType.Settlement);
+        Debug.Log($"Player {localPlayer.playerIndex} -- Build Settlement clicked!");
+        localPlayer.OnClickBuildSettlement();
         // HideButtons();
     }
 
     public void OnBuildCity()
     {
-        Debug.Log("Build City clicked!");
-        CatanMap.instance.OnClickBuilding(BuildingType.City);
+        Debug.Log($"Player {localPlayer.playerIndex} -- Build City clicked!");
+        localPlayer.OnClickBuildCity();
         // HideButtons();
     }
 
-    public void OnTrade()
+    public void OnBuildRoad()
     {
-        Debug.Log("Trade clicked!");
-        HideButtons();
+        Debug.Log($"Player {localPlayer.playerIndex} -- Build Road clicked!");
+        localPlayer.OnClickBuildRoad();
+        // HideButtons();
     }
 
-    private void HideButtons()
+    public void HideButtons()
     {
         isVisible = false;
-        button1.SetActive(false);
-        button2.SetActive(false);
-        // button3.SetActive(false);
+        buildSettlement.SetActive(false);
+        buildCity.SetActive(false);
+        buildRoad.SetActive(false);
     }
 }

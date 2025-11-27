@@ -1,57 +1,55 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using Mirror;
 
-public class DiceController : MonoBehaviour
+public class DiceController : NetworkBehaviour
 {
     public Dice dice1;     
-    public Dice dice2;    
-    public Player player;
-    public CatanMap catanMap;  
+    public Dice dice2;
+    public static DiceController instance; 
+    public bool canRoll = true;
     private bool isRolling = false;
-    public int finalValue  { get; private set; }
+    [SyncVar(hook = nameof(OnDiceResultChanged))] public int finalValue = -1;
+    // private Game game;
 
-    private void Update()
+    protected void Awake()
     {
-        // Kiểm tra click chuột trái
-        if (!isRolling && Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            // Chuyển tọa độ chuột sang world space
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-            mousePos.z = 0;
-
-            // Kiểm tra có click trúng GameObject này không
-            // Debug.Log("Clicked!");
-            if (GetComponent<Collider2D>() == Physics2D.OverlapPoint(mousePos))
-            {
-                StartCoroutine("RollBothDice");
-            }
-        }
+        if(DiceController.instance != null) Debug.LogError("On 1 Dice Controller");
+        DiceController.instance = this;
+    }
+    private void Start()
+    {
+        // game = Game.instance;
     }
 
+    [Server]
+    public void ServerRollDice()
+    {
+        if(!canRoll || isRolling) return;
+        StartCoroutine("RollBothDice");
+    }
+    [Server]
     private System.Collections.IEnumerator RollBothDice()
     {
-        // Chờ cả 2 dice roll xong
         isRolling = true;
-        Coroutine roll1 = dice1.StartCoroutine("RollTheDice");
-        Coroutine roll2 = dice2.StartCoroutine("RollTheDice");
-
-        yield return roll1;
-        yield return roll2;
-
+        dice1.ServerRollDice();
+        dice2.ServerRollDice();
+        yield return new WaitForSeconds(1.2f);
         finalValue = dice1.finalValue + dice2.finalValue;
-        Debug.Log("Tổng 2 dice: " + finalValue);
         isRolling = false;
-        this.CollectResources();
+        canRoll = false;
+        // game.CollectResources(finalValue);
     }
 
-    private void CollectResources()
+    [Server]
+    public void SetCanRoll()
     {
-        if (finalValue == 7)
-        {
-            Debug.Log("Di chuyển Robber"); 
-            return;
-        }
-        catanMap.GetResourcesByDiceNumber(finalValue); 
+        canRoll = true;
+    }
+
+    void OnDiceResultChanged(int oldValue, int newValue)
+    {
+        Debug.Log($"[Server] Tổng 2 dice: {newValue}");
     }
 }

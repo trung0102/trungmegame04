@@ -7,7 +7,7 @@ public class Settlement : Building
     public override Dictionary<ResourceType, int> Cost => new Dictionary<ResourceType, int>()
     {
         { ResourceType.Wood, 1 },
-        { ResourceType.Brick, 1 },
+        { ResourceType.Ore, 1 },
         { ResourceType.Wheat, 1 },
         { ResourceType.Sheep, 1 }
     };
@@ -15,14 +15,20 @@ public class Settlement : Building
     public override bool CanPlace(BuildingType type)
     {
         if(type == BuildingType.City) return true;
-        Debug.Log($"Chi dat duoc city");
+        Debug.Log($"Chỉ có thể upgrade lên City");
         return false;
     }
 
     public override void GiveResource(ResProduction res)
     {   
+        if (owner == null) return;
         var resource = res.GenerateResources();
-        this.owner.AddResource(resource.name, resource.num * this.GetProductionAmount());
+        int amount = resource.num * GetProductionAmount();
+        if (isServer)
+        {   
+            Debug.Log($"[Server] Give Resource {resource.name} -- {amount}");
+            owner.AddResource(resource.name, amount);
+        }
     }
     public virtual int GetProductionAmount()
     {
@@ -31,6 +37,6 @@ public class Settlement : Building
 
     public override string PrintInfo()
     {
-        return "Settlementttttt";
+        return $"| [Settlement] owner:{owner.playerIndex}";
     }
 }

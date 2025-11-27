@@ -1,15 +1,26 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Mirror;
 
-public abstract class Building : MonoBehaviour
+public abstract class Building : NetworkBehaviour
 {
-    public Player owner;
+    [SyncVar(hook = nameof(OnPlayerChanged))] public PlayerNetwork owner;
     public abstract BuildingType Type { get; }
     public abstract Dictionary<ResourceType, int> Cost { get; }
 
-    public virtual void Initialize(Player owner)
+    [SyncVar(hook = nameof(OnColorChanged))] 
+    public Color color = Color.blue;
+
+    private SpriteRenderer sr;
+
+    void Awake() {
+        sr = GetComponent<SpriteRenderer>();
+    }
+
+    public virtual void Initialize(PlayerNetwork owner)
     {
         this.owner = owner;
+        color = owner.color;
     }
 
     public abstract bool CanPlace(BuildingType type);
@@ -17,8 +28,15 @@ public abstract class Building : MonoBehaviour
 
     public virtual string PrintInfo()
     {
-        return "Buildinggggg";
+        return "Building";
     }
 
+    void OnPlayerChanged(PlayerNetwork oldPlayer, PlayerNetwork newPlayer)
+    {
+         Debug.Log($"[Building] Player index: {newPlayer.playerIndex}");
+    }
+    void OnColorChanged(Color oldColor, Color newColor) {
+        if (sr != null) sr.color = newColor;
+    }
 
 }
