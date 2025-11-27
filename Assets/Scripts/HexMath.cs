@@ -71,36 +71,46 @@ public class Vertex
         return ret;
     }
 
-    public GameObject PlaceBuilding(BuildingType type, PlayerNetwork owner)
+    public void PlaceBuilding(BuildingType type, PlayerNetwork owner)
     {   
+        if(!CheckValid(owner)) return;
         Building build = null;
-        if (!building)
-        {
-            if (type == BuildingType.Settlement)
+        if (type == BuildingType.Settlement)
+        {   
+            build = Object.Instantiate(CatanMap.instance.settlementPrefab, position + new Vector3(-0.545f, 0.52f, -1f), Quaternion.identity).GetComponent<Settlement>();
+            build.Initialize(owner);
+            if (!build.CanPlace(building))
             {
-                build = Object.Instantiate(CatanMap.instance.settlementPrefab, position + new Vector3(-0.545f, 0.52f, -1f), Quaternion.identity).GetComponent<Settlement>();
-            }
-            else
-            {
-               Debug.Log("Chi được xay settlement"); 
-               return null;
-            }
+                Object.Destroy(build.gameObject);
+                Debug.Log("Chi được xay settlement"); 
+                return;
+            }      
         }
-        else if (building.CanPlace(type))
+        else
         {
-            
-            if (type == BuildingType.City)
+            build = Object.Instantiate(CatanMap.instance.cityPrefab, position+ new Vector3(-0.461f, 0.537f, -1f), Quaternion.identity).GetComponent<City>();  
+            build.Initialize(owner);
+            if (!build.CanPlace(building))
             {
-                Object.Destroy(building.gameObject);
-                build = Object.Instantiate(CatanMap.instance.cityPrefab, position+ new Vector3(-0.461f, 0.537f, -1f), Quaternion.identity).GetComponent<City>();
-            }    
+                Object.Destroy(build.gameObject);
+                Debug.Log("Chi được xay city"); 
+                return;
+            }
+            Object.Destroy(building.gameObject);
         }
-        else return null;
-        build.Initialize(owner);
         build.GetComponent<SpriteRenderer>().color = owner.color;
         building = build;  
+        if(owner.numHouse == 3)
+        {   
+            string ret = "Add setup resource: ";
+            foreach (var prod in adjacentProduct)
+            {
+                ret += $"{prod.information.resource} - ";
+                this.building.GiveResource(prod);
+            }
+            Debug.Log(ret);
+        }
         NetworkServer.Spawn(building.gameObject);  
-        return build.gameObject;
     }
 
     public void CollectResources(int diceNumber)
@@ -123,6 +133,38 @@ public class Vertex
         }
         return;
     }
+
+    private bool CheckValid(PlayerNetwork owner)
+    {   
+        if(TurnManager.instance.is_Setup) return true;
+        foreach (var edge in connectedEdges)
+        {
+            if(edge.building != null)
+            {
+                if(edge.building.owner == owner)
+                {   
+                    if(CheckVertex(edge.v1, owner) || CheckVertex(edge.v2, owner))
+                    return true;
+                }
+            }
+        }
+        Debug.Log("Xây nhà cách ít nhất 2 road và phải gần với công trình!!!"); 
+        return false;
+    }
+
+    private bool CheckVertex(Vertex v, PlayerNetwork owner)
+    {
+        if(v != this)
+        {
+            if(v.building == null || v.building.owner != owner)
+            {   
+                return true;
+            }
+        }
+        Debug.Log("Xây nhà cách ít nhất 2 road!!!");
+        return false;
+    }
+
 }
 
 public class Edge
@@ -137,27 +179,22 @@ public class Edge
         this.v1 = v1;
         this.v2 = v2;
     }
-    public GameObject PlaceBuilding(BuildingType type, PlayerNetwork owner)
+    public void PlaceBuilding(BuildingType type, PlayerNetwork owner)
     {   
+        if(!CheckValid(owner)) return;
         Road road = null;
-        if (!building)
+        if (type == BuildingType.Road)
         {
-            if (type == BuildingType.Road)
+            road = Object.Instantiate(CatanMap.instance.roadPrefab, midPosition + new Vector3(-0.5f, 0.55f, 0), Quaternion.identity).GetComponent<Road>();
+            road.Initialize(owner);
+            if (!road.CanPlace(building))
             {
-                road = Object.Instantiate(CatanMap.instance.roadPrefab, midPosition + new Vector3(-0.5f, 0.55f, 0), Quaternion.identity).GetComponent<Road>();
-            }
-            else
-            {
-               Debug.Log("Chi được xay road"); 
-               return null;
+                Object.Destroy(road.gameObject);
+                Debug.Log("Chi được xay road"); 
+                return;
             }
         }
-        else if (building.CanPlace(type))
-        {
-            return null;
-        }
-        else return null;
-        road.Initialize(owner);
+        else return;
         road.GetComponent<SpriteRenderer>().color = owner.color;
         if(v1.position.x > v2.position.x && v1.position.y < v2.position.y)
         {
@@ -174,12 +211,39 @@ public class Edge
         }
         building = road;
         NetworkServer.Spawn(building.gameObject);  
-        return road.gameObject;
     }
     public string PrintInfo()
     {   
         string ret = $"EDGE: {midPosition} ";
         ret += !building ? "| [ROAD]: None": building.PrintInfo();
         return ret;
+    }
+
+    private bool CheckValid(PlayerNetwork owner)
+    {   
+        if(v1.building!= null && v1.building.owner == owner) return true;
+        if(v2.building!= null && v2.building.owner == owner) return true;
+        foreach (var edge in v1.connectedEdges)
+        {
+            if(edge.building != null)
+            {
+                if(edge.building.owner == owner)
+                {
+                    return true;
+                }
+            }
+        }
+        foreach (var edge in v2.connectedEdges)
+        {
+            if(edge.building != null)
+            {
+                if(edge.building.owner == owner)
+                {
+                    return true;
+                }
+            }
+        }
+        Debug.Log("Chỉ được xây road ở gần công trình của mình!!!"); 
+        return false;
     }
 }

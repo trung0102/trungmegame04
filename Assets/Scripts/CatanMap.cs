@@ -61,15 +61,6 @@ public class CatanMap : NetworkBehaviour
 
             Vector3Int cellPos = tileMap.WorldToCell(mouseWorldPos); // Lấy ô hex
             TileBase clickedTile = tileMap.GetTile(cellPos); // Lấy Tile hiện tại
-
-            Vector3 chosenVertex = FindClosestEdge(mouseWorldPos, 0.4f);
-            if (chosenVertex == Vector3.zero) return;
-            Edge edge = edgeDict[chosenVertex];
-            Debug.Log($"[Edge] --- {edge.PrintInfo()}");
-            chosenVertex = FindClosestVertex(mouseWorldPos, 0.4f);
-            if (chosenVertex == Vector3.zero) return;
-            Vertex vertex = vertexDict[chosenVertex];
-            Debug.Log($"[Vertex] --- {vertex.PrintInfo()}");
             // if (clickedTile != null)
             // { 
             //     foreach (var product in productions)
@@ -81,29 +72,6 @@ public class CatanMap : NetworkBehaviour
             //     }
             //     // TODO: Hiển thị UI hoặc info khác
             // }  
-            // if(building != BuildingType.None)
-            // {   
-            //     Player player = Game.instance.CurrentPlayer;
-            //     if(building == BuildingType.Road)
-            //     {
-            //         Vector3 chosenVertex = FindClosestEdge(mouseWorldPos, 0.4f);
-            //         if (chosenVertex == Vector3.zero)
-            //         {
-            //         Debug.Log($"Vị trí đặt đường không phù hợp"); return;
-            //         } 
-            //         Edge vertex = edgeDict[chosenVertex];
-            //         edgeDict[chosenVertex].PlaceBuilding(building, player);
-            //     }
-            //     else
-            //     {
-            //         Vector3 chosenVertex = FindClosestVertex(mouseWorldPos);
-            //         if (chosenVertex == Vector3.zero)
-            //         {
-            //         Debug.Log($"Vị trí đặt nhà không phù hợp"); return;
-            //         } 
-            //         Vertex vertex = vertexDict[chosenVertex];
-            //         vertexDict[chosenVertex].PlaceBuilding(building, player);
-            //     }
 
             // }
             // if(changeTileAtPosition) ChangeTileAtPosition(cellPos, ResourceType.Wood);    
@@ -146,7 +114,7 @@ public class CatanMap : NetworkBehaviour
                     Debug.Log($"Vị trí đặt đường không phù hợp"); return false;
                 } 
                 Edge edge = edgeDict[chosenEdge];
-                GameObject roadObj = edge.PlaceBuilding(building, player);
+                edge.PlaceBuilding(building, player);
             }
             else
             {
@@ -156,20 +124,27 @@ public class CatanMap : NetworkBehaviour
                 Debug.Log($"Vị trí đặt nhà không phù hợp"); return false;
                 } 
                 Vertex vertex = vertexDict[chosenVertex];
-                GameObject houseObj = vertex.PlaceBuilding(building, player);
+                vertex.PlaceBuilding(building, player);
             }
             return true;
         }
         return false;
     }
-    // // sự kiện khi đổ xúc xắc
-    // public void GetResourcesByDiceNumber(int diceNumber)
-    // {   
-    //     foreach (var kvp in vertexDict)
-    //     {
-    //         kvp.Value.CollectResources(diceNumber);
-    //     }
-    // }
+
+    [Server]
+    public void CollectResources(int finalValue)
+    {
+        if (finalValue == 7)
+        {
+            Debug.Log("Di chuyển Robber"); 
+            return;
+        }
+        foreach (var kvp in vertexDict)
+        {
+            Vertex v = kvp.Value;
+            v.CollectResources(finalValue);
+        }
+    }
 
     private void GenerateBuildableVertices(ResProduction res)
     {

@@ -39,7 +39,7 @@ public class Game : MonoBehaviour
 
     public void OnEndTurn()
     {
-        diceController.canRoll = true;
+        // diceController.canRoll = true;
         currentPlayerIndex = (currentPlayerIndex + 1)%players.Count;
     }
     public void CollectResources(int finalValue)
