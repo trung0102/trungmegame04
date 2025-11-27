@@ -1,6 +1,6 @@
 ﻿<Solution>
-  <Project Path="Edgegap.csproj" />
   <Project Path="Unity.Mirror.CodeGen.csproj" />
+  <Project Path="Edgegap.csproj" />
   <Project Path="Mirror.Components.csproj" />
   <Project Path="Mirror.Editor.csproj" />
   <Project Path="Mirror.Examples.csproj" />
@@ -11,6 +11,7 @@
   <Project Path="Mirror.Authenticators.csproj" />
   <Project Path="Mirror.Transports.csproj" />
   <Project Path="EncryptionTransportEditor.csproj" />
+  <Project Path="Assembly-CSharp-firstpass.csproj" />
   <Project Path="Telepathy.csproj" />
   <Project Path="Mirror.CompilerSymbols.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />

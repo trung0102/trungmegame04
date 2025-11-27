@@ -28,7 +28,7 @@ public class GameButtonManager : NetworkBehaviour
     private void Start()
     {
         // game = Game.instance;
-        building.SetActive(false);
+        // building.SetActive(false);
         continuebutton.SetActive(false);
     }
     public void SetLocalPlayer(PlayerNetwork player)
@@ -52,7 +52,7 @@ public class GameButtonManager : NetworkBehaviour
     [ClientRpc]
     public void RpcUpdateUIAfterEndTurn()
     {
-        HideButtons();
+        if(!TurnManager.instance.is_Setup) HideButtons();
     }
 
     [ClientRpc]

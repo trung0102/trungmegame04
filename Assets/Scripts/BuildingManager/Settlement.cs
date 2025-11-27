@@ -12,10 +12,14 @@ public class Settlement : Building
         { ResourceType.Sheep, 1 }
     };
 
-    public override bool CanPlace(BuildingType type)
+    public override bool CanPlace(Building build)
     {
-        if(type == BuildingType.City) return true;
-        Debug.Log($"Chỉ có thể upgrade lên City");
+        int numHouse = owner.PayCost(Cost);
+        if(numHouse != -1)
+        {
+            if(build == null) return true;
+        }
+        Debug.Log("Không đủ Cost để xây Settlement");
         return false;
     }
 
@@ -24,9 +28,9 @@ public class Settlement : Building
         if (owner == null) return;
         var resource = res.GenerateResources();
         int amount = resource.num * GetProductionAmount();
-        if (isServer)
+        if (isServer || TurnManager.instance.is_Setup)
         {   
-            Debug.Log($"[Server] Give Resource {resource.name} -- {amount}");
+            Debug.Log($"[Server] Give Resource to Player {owner.playerIndex}: {resource.name} -- {amount}");
             owner.AddResource(resource.name, amount);
         }
     }

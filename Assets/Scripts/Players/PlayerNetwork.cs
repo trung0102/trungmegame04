@@ -7,11 +7,18 @@ public class PlayerNetwork : NetworkBehaviour
 {   
     public static PlayerNetwork Local;
     public readonly SyncList<Resource> resources = new SyncList<Resource>();
+    public List<Resource> currentResources = new List<Resource>();
+    public int numHouse = 0;
 
     [SyncVar(hook = nameof(OnColorChanged))] public Color color = Color.red;
     [SyncVar(hook = nameof(OnIndexChanged))] public int playerIndex = -1;
+    private int index = 1;
 
     private BuildingType selectedBuilding = BuildingType.None;
+    private void Awake()
+    {
+        resources.Callback += OnHandUpdated;
+    }
     private void Update()
     {   
         if (!isLocalPlayer) return;
@@ -58,7 +65,9 @@ public class PlayerNetwork : NetworkBehaviour
     public void AddResource(ResourceType resourcename, int number = 1)
     {
         Resource res = GetResByName(resourcename);
+        resources.Remove(res);
         res.number += number;
+        resources.Add(res);
         Debug.Log($"[Server] Player {playerIndex} Add: {res.resourceName} --- {number}");
     }
     [Server]
@@ -73,6 +82,38 @@ public class PlayerNetwork : NetworkBehaviour
             resources.Add(res);
         }
         return res;
+    }
+
+    [Server]
+    public int PayCost(Dictionary<ResourceType, int> cost)
+    {   
+        if(numHouse >= 4)
+        {
+            foreach (var kv in cost)
+            {
+                Resource res = GetResByName(kv.Key);
+                if (res.number < kv.Value)
+                    return -1;
+            }
+        }
+        numHouse ++;
+        foreach (var kv in cost)
+        {
+            RemoveResource(kv.Key, kv.Value);
+        }
+
+        return numHouse;
+    }
+    [Server]
+    public void RemoveResource(ResourceType resourceName, int amount = 1)
+    {   
+        if(numHouse <= 4) return;
+        Resource res = GetResByName(resourceName);
+        resources.Remove(res);
+        res.number -= amount;
+        if(res.number < 0) res.number =0;
+        resources.Add(res);
+        Debug.Log($"[Server] Player {playerIndex} Remove: {res.resourceName} --- {amount}");
     }
 
     [Command]
@@ -155,5 +196,24 @@ public class PlayerNetwork : NetworkBehaviour
     void OnIndexChanged(int oldValue, int newValue)
     {
         Debug.Log($"Player index: {newValue}");
+    }
+    private void OnHandUpdated(SyncList<Resource>.Operation op, int index, Resource  oldItem, Resource newItem)
+    {
+        if (!isLocalPlayer) return;
+        List<int> hand = new List<int>();
+        foreach (var resource in resources)
+        {
+            for (int i = 0; i < resource.number; i++)
+            {
+                hand.Add((int)resource.resourceName);
+            }
+        }
+        currentResources.Clear();
+        foreach (var res in resources)
+        {
+            currentResources.Add(new Resource { resourceName = res.resourceName, number = res.number });
+        }
+        this.index++;
+        HandManager.instance.UpdateHandUI(hand);
     }
 }

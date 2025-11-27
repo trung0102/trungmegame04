@@ -23,7 +23,7 @@ public abstract class Building : NetworkBehaviour
         color = owner.color;
     }
 
-    public abstract bool CanPlace(BuildingType type);
+    public abstract bool CanPlace(Building build);
     public abstract void GiveResource(ResProduction res);
 
     public virtual string PrintInfo()

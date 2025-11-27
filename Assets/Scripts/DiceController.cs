@@ -8,7 +8,7 @@ public class DiceController : NetworkBehaviour
     public Dice dice1;     
     public Dice dice2;
     public static DiceController instance; 
-    public bool canRoll = true;
+    private bool canRoll = false;
     private bool isRolling = false;
     [SyncVar(hook = nameof(OnDiceResultChanged))] public int finalValue = -1;
     // private Game game;
@@ -39,7 +39,7 @@ public class DiceController : NetworkBehaviour
         finalValue = dice1.finalValue + dice2.finalValue;
         isRolling = false;
         canRoll = false;
-        // game.CollectResources(finalValue);
+        CatanMap.instance.CollectResources(finalValue);
     }
 
     [Server]

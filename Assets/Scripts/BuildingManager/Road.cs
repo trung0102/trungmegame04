@@ -10,9 +10,14 @@ public class Road : Building
         { ResourceType.Ore, 1 }
     };
 
-    public override bool CanPlace(BuildingType type)
-    {
-        Debug.Log($"Khong the dat gi them");
+    public override bool CanPlace(Building build)
+    {   
+        int numHouse = owner.PayCost(Cost);
+        if(numHouse != -1)
+        {
+            if(build == null) return true;
+        }
+        Debug.Log("Không đủ Cost để xây Road");
         return false;
     }
 
