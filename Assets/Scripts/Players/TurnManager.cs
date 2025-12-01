@@ -9,7 +9,7 @@ public class TurnManager : NetworkBehaviour
     public List<PlayerNetwork> players = new List<PlayerNetwork>();
     public bool is_Setup = true;
     private int setupTurnCount = 0;
-    private bool reverseOrder = false;
+    public bool reverseOrder = false;
 
     private readonly Color[] playerColors = new Color[]{ Color.red, Color.white, Color.yellow, Color.black};
     private void Awake()
@@ -81,8 +81,23 @@ public class TurnManager : NetworkBehaviour
             // --- Normal turn phase ---
             currentPlayerIndex = (currentPlayerIndex + 1) % players.Count;
             DiceController.instance.SetCanRoll();
+            
         }
-        Debug.Log($"[Server] Turn changed: Player {currentPlayerIndex}");
+        if (players[currentPlayerIndex].isBot)
+        {   
+            Debug.Log($"BOT action");
+            StartCoroutine("BotTakeTurn");
+        }
+    }
+
+    [Server]
+    private System.Collections.IEnumerator BotTakeTurn()
+    {   
+        DiceController.instance.ServerRollDice();
+        yield return new WaitForSeconds(1.2f);        
+        AIManager.instance.TakeTurn(players[currentPlayerIndex]);
+        yield return new WaitForSeconds(1.2f);
+        AdvanceTurn();
     }
 
     public PlayerNetwork getPlayer()
@@ -90,9 +105,13 @@ public class TurnManager : NetworkBehaviour
         return players[currentPlayerIndex];
     }
 
-    void OnTurnChanged(int oldVal, int newVal)
+    [Server]
+    public void PauseGame()
     {
-        Debug.Log($"Turn changed: Player {newVal}");
+        
     }
-
+    void OnTurnChanged(int oldVal, int newVal)
+    {   
+        Debug.Log($"[Server] Turn changed: Player {newVal}");
+    }
 }

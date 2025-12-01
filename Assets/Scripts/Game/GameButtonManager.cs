@@ -40,6 +40,16 @@ public class GameButtonManager : NetworkBehaviour
     {
         if(localPlayer == null) return;
         localPlayer.CmdPause();
+        // continuebutton.SetActive(true);
+    }
+    public void OnContinue()
+    {
+        isVisible = true;
+        endturn.SetActive(true);
+        building.SetActive(true);
+        localPlayer.CmdContinue();
+        continuebutton.SetActive(false);
+
     }
 
     public void OnEndTurn()
