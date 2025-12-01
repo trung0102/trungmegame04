@@ -190,11 +190,11 @@ public class Edge
         Road road = CanBuild(type, owner);
         if(road == null) return;
         road.GetComponent<SpriteRenderer>().color = owner.color;
-        if(v1.position.x > v2.position.x && v1.position.y < v2.position.y)
+        if((v1.position.x > v2.position.x && v1.position.y < v2.position.y) || (v1.position.x < v2.position.x && v1.position.y > v2.position.y))
         {
             road.transform.localScale = new Vector3(1.35f, 1.35f, 1f);  
         }
-        else if(v1.position.x > v2.position.x && v1.position.y > v2.position.y)
+        else if((v1.position.x > v2.position.x && v1.position.y > v2.position.y) || (v1.position.x < v2.position.x && v1.position.y < v2.position.y))
         {
             road.transform.localScale = new Vector3(-1.35f, 1.35f, 1f);  
         }
@@ -205,6 +205,7 @@ public class Edge
         }
         building = road;
         NetworkServer.Spawn(building.gameObject);  
+        Debug.Log(PrintInfo());
     }
 
     public Road CanBuild(BuildingType type, PlayerNetwork owner, bool gialap=false)
@@ -229,7 +230,7 @@ public class Edge
     }
     public string PrintInfo()
     {   
-        string ret = $"EDGE: {midPosition} ";
+        string ret = $"EDGE: {midPosition} -- v1: {v1.position} -- v2: {v2.position}";
         ret += !building ? "| [ROAD]: None": building.PrintInfo();
         return ret;
     }
@@ -240,6 +241,7 @@ public class Edge
         if(v2.building!= null && v2.building.owner == owner) return true;
         foreach (var edge in v1.connectedEdges)
         {
+            if(v1.building!= null && v1.building.owner != owner) break;
             if(edge.building != null)
             {
                 if(edge.building.owner == owner)
@@ -249,7 +251,8 @@ public class Edge
             }
         }
         foreach (var edge in v2.connectedEdges)
-        {
+        {   
+            if(v2.building!= null && v2.building.owner != owner) break;
             if(edge.building != null)
             {
                 if(edge.building.owner == owner)

@@ -11,6 +11,12 @@ public class GameButtonManager : NetworkBehaviour
     public GameObject endturn;
     public GameObject building;
     public GameObject continuebutton;
+    public GameObject menu;
+    public GameObject background;
+    // public GameObject pausebutton;
+    public GameObject menutext;
+    public GameObject pausetext;
+
     private bool isVisible = true;
     public static GameButtonManager instance;   
     private PlayerNetwork localPlayer;
@@ -29,27 +35,65 @@ public class GameButtonManager : NetworkBehaviour
     {
         // game = Game.instance;
         // building.SetActive(false);
-        continuebutton.SetActive(false);
+        // continuebutton.SetActive(false);
     }
     public void SetLocalPlayer(PlayerNetwork player)
     {
         localPlayer = player;
     }
 
+    [ClientRpc]
+    public void RpcHideBackground()
+    {   
+        if (background != null)
+            background.SetActive(false);
+        menutext.SetActive(false);  
+    }
+
+    [Server]
+    public void StartGame()
+    {
+        Vector3 spawnPos = Vector3.zero; 
+        int num = TurnManager.instance.players.Count;
+        for(int i=num; i < 4; ++i)
+        {
+            BotNetwork bot = Instantiate(AIManager.instance.botPrefab, spawnPos, Quaternion.identity).GetComponent<BotNetwork>();
+            NetworkServer.Spawn(bot.gameObject);
+            Debug.Log($"[Server] Spawn Bot");
+        }
+
+        RpcHideBackground();
+    }
+
     public void OnPause()
     {
         if(localPlayer == null) return;
         localPlayer.CmdPause();
-        // continuebutton.SetActive(true);
+        continuebutton.SetActive(true);
+    }
+    [ClientRpc]
+    public void RpcPause()
+    {
+        if (background != null)
+            background.SetActive(true);
+        pausetext.SetActive(true);
+    }
+    [ClientRpc]
+    public void RpcContinue()
+    {
+        if (background != null)
+            background.SetActive(false);
+        pausetext.SetActive(false);
     }
     public void OnContinue()
     {
-        isVisible = true;
-        endturn.SetActive(true);
-        building.SetActive(true);
+        // isVisible = true;
+        // endturn.SetActive(true);
+        // building.SetActive(true);
+        // localPlayer.CmdContinue();
+        // continuebutton.SetActive(false);
+        if(localPlayer == null) return;
         localPlayer.CmdContinue();
-        continuebutton.SetActive(false);
-
     }
 
     public void OnEndTurn()

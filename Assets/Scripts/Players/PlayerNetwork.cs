@@ -10,6 +10,8 @@ public class PlayerNetwork : NetworkBehaviour
     public List<Resource> currentResources = new List<Resource>();
     public int numHouse = 0;
     public int numRoad = 0;
+
+    
     protected bool pause = false;
     public bool isBot = false;
 
@@ -42,6 +44,16 @@ public class PlayerNetwork : NetworkBehaviour
     {
         base.OnStartServer();
         TurnManager.instance.RegisterPlayer(this);
+        if(isServer && isLocalPlayer)
+        {   
+            GameButtonManager.instance.menu.SetActive(true);
+        }
+    }
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        if(GameButtonManager.instance != null)
+            GameButtonManager.instance.menutext.SetActive(true);
     }
     public override void OnStopServer()
     {
@@ -55,6 +67,7 @@ public class PlayerNetwork : NetworkBehaviour
         GameButtonManager.instance.SetLocalPlayer(this);
         ButtonManager.instance.SetLocalPlayer(this);
         Debug.Log($"[Local Player {playerIndex}] Connected");
+        
     }
 
     protected bool isMyTurn()
@@ -168,22 +181,19 @@ public class PlayerNetwork : NetworkBehaviour
     [Command]
     public void CmdPause()
     {
-        // Debug.Log($"[Server] Player {playerIndex} PAUSEEEE");
-        // pause = true;
-        // GameButtonManager.instance.RpcUpdateUIAfterPause();
+        Debug.Log($"[Server] Player {playerIndex} PAUSEEEE");
+        pause = true;
+        GameButtonManager.instance.RpcPause();
         // Pause();
-        Vector3 spawnPos = Vector3.zero; 
-        BotNetwork bot = Instantiate(AIManager.instance.botPrefab, spawnPos, Quaternion.identity).GetComponent<BotNetwork>();
-        NetworkServer.Spawn(bot.gameObject);
-        Debug.Log($"[Server] Spawn Bot");
     }
+
     [Command]
     public void CmdContinue()
     {
         Debug.Log($"[Server] Player {playerIndex} Continue");
         pause = false;
-        // GameButtonManager.instance.RpcUpdateUIAfterPause();
-        Continue();
+        GameButtonManager.instance.RpcContinue();
+        // Continue();
     }
 
     [Server]

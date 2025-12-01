@@ -11,7 +11,7 @@ public class TurnManager : NetworkBehaviour
     private int setupTurnCount = 0;
     public bool reverseOrder = false;
 
-    private readonly Color[] playerColors = new Color[]{ Color.red, Color.white, Color.yellow, Color.black};
+    private readonly Color[] playerColors = new Color[]{ Color.red, Color.white, Color.yellow, Color.magenta };
     private void Awake()
     {
         if(TurnManager.instance != null) Debug.LogError("On 1 TurnManager");
