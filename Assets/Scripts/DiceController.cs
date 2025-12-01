@@ -43,9 +43,10 @@ public class DiceController : NetworkBehaviour
     }
 
     [Server]
-    public void SetCanRoll()
-    {
-        canRoll = true;
+    public void SetCanRoll(bool roll = true)
+    {   
+        if(TurnManager.instance.is_Setup) return;
+        canRoll = roll;
     }
 
     void OnDiceResultChanged(int oldValue, int newValue)

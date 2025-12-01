@@ -22,13 +22,16 @@ public class ResProduction : MonoBehaviour
                   $"Token: {information.numberToken} | Blocked: {information.blocked}";
     }
 
-    public void ChangeTile(Tilemap tilemap, HexTileSet tileSet, ResourceType resource)
-    {
-        information.resource = resource;
-        TileBase newTile = tileSet.GetTile(resource);
-        tilemap.SetTile(position, newTile);
-        tilemap.RefreshTile(position);
+    public void ChangeTile(Tilemap numMap, HexTileSet tileSet, int num)
+    {   
+        TileBase newTile = tileSet.GetTile(num);
+        numMap.SetTile(position, newTile);
+        numMap.RefreshTile(position);
         Debug.Log($"Đã chuyển tile tại: {position}, Tile Name: {newTile.name}");
+        if(num == 7)
+        {
+            information.blocked = true;
+        }
     }
 }
 

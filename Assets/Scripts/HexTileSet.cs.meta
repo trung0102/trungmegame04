@@ -4,12 +4,17 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - woodTile: {fileID: 11400000, guid: c7da46adc1fbdb0408341caee4b18e15, type: 2}
-  - brickTile: {fileID: 11400000, guid: 8ed1ff4d7b8c1e5408beb637d684f2c7, type: 2}
-  - wheatTile: {fileID: 11400000, guid: 1a883e90d082bec4cbd6785da0ce7695, type: 2}
-  - sheepTile: {fileID: 11400000, guid: 56f8605c7b81e754a82fad2712af9bfa, type: 2}
-  - oreTile: {fileID: 11400000, guid: c225ae680adffea4bbbe270ab4c3019a, type: 2}
-  - desertTile: {fileID: 11400000, guid: a2c68c64039d89f439574ae232972b64, type: 2}
+  - Tile2: {fileID: 11400000, guid: 6625f64ed59383f469e88a4b7fc067de, type: 2}
+  - Tile3: {fileID: 11400000, guid: 4a8335b66374a8343a445c0330202da7, type: 2}
+  - Tile4: {fileID: 11400000, guid: 62240e3c9df31d847993efa9f31b5268, type: 2}
+  - Tile5: {fileID: 11400000, guid: caf50694be959d74882b5adef7135ca5, type: 2}
+  - Tile6: {fileID: 11400000, guid: 10f5b04df813e07459d360996af1b66a, type: 2}
+  - desertTile: {fileID: 11400000, guid: 160c2ef2e4f9f83488f9f71e8438e71f, type: 2}
+  - Tile8: {fileID: 11400000, guid: 65315c82529733c4b98047c88d6b2b41, type: 2}
+  - Tile9: {fileID: 11400000, guid: 4f0a5adf59749d241b98de4b1bcb3976, type: 2}
+  - Tile10: {fileID: 11400000, guid: 1107410f6d6999044829618e9e50bd9c, type: 2}
+  - Tile11: {fileID: 11400000, guid: 3fb1689e008b4584a83e8e2f3bc0c359, type: 2}
+  - Tile12: {fileID: 11400000, guid: 890bc2a74570be64989a1ec3ca9b9195, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

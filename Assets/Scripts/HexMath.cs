@@ -73,34 +73,11 @@ public class Vertex
 
     public void PlaceBuilding(BuildingType type, PlayerNetwork owner)
     {   
-        if(!CheckValid(owner)) return;
-        Building build = null;
-        if (type == BuildingType.Settlement)
-        {   
-            build = Object.Instantiate(CatanMap.instance.settlementPrefab, position + new Vector3(-0.545f, 0.52f, -1f), Quaternion.identity).GetComponent<Settlement>();
-            build.Initialize(owner);
-            if (!build.CanPlace(building))
-            {
-                Object.Destroy(build.gameObject);
-                Debug.Log("Chi được xay settlement"); 
-                return;
-            }      
-        }
-        else
-        {
-            build = Object.Instantiate(CatanMap.instance.cityPrefab, position+ new Vector3(-0.461f, 0.537f, -1f), Quaternion.identity).GetComponent<City>();  
-            build.Initialize(owner);
-            if (!build.CanPlace(building))
-            {
-                Object.Destroy(build.gameObject);
-                Debug.Log("Chi được xay city"); 
-                return;
-            }
-            Object.Destroy(building.gameObject);
-        }
+        Building build = CanBuild(type, owner);
+        if(build == null) return;
         build.GetComponent<SpriteRenderer>().color = owner.color;
         building = build;  
-        if(owner.numHouse == 3)
+        if(owner.numHouse == 2 && type == BuildingType.Settlement)
         {   
             string ret = "Add setup resource: ";
             foreach (var prod in adjacentProduct)
@@ -111,6 +88,35 @@ public class Vertex
             Debug.Log(ret);
         }
         NetworkServer.Spawn(building.gameObject);  
+    }
+    public Building CanBuild(BuildingType type, PlayerNetwork owner, bool gialap=false)
+    {
+        if(!CheckValid(owner)) return null;
+        if(TurnManager.instance.is_Setup && !TurnManager.instance.reverseOrder && owner.numHouse >= 1) return null;
+        else if(TurnManager.instance.is_Setup && TurnManager.instance.reverseOrder && owner.numHouse >= 2) return null;
+        Building build = null;
+        if (type == BuildingType.Settlement)
+        {   
+            build = Object.Instantiate(CatanMap.instance.settlementPrefab, position + new Vector3(-0.545f, 0.52f, -1f), Quaternion.identity).GetComponent<Settlement>();
+            build.Initialize(owner);
+            if (!build.CanPlace(building, gialap))
+            {
+                Object.Destroy(build.gameObject);
+                return null;
+            }      
+        }
+        else
+        {
+            build = Object.Instantiate(CatanMap.instance.cityPrefab, position+ new Vector3(-0.461f, 0.537f, -1f), Quaternion.identity).GetComponent<City>();  
+            build.Initialize(owner);
+            if (!build.CanPlace(building, gialap))
+            {
+                Object.Destroy(build.gameObject);
+                return null;
+            }
+        }
+        if(gialap && build != null) Object.Destroy(build.gameObject);
+        return build;
     }
 
     public void CollectResources(int diceNumber)
@@ -143,7 +149,7 @@ public class Vertex
             {
                 if(edge.building.owner == owner)
                 {   
-                    if(CheckVertex(edge.v1, owner) || CheckVertex(edge.v2, owner))
+                    if(CheckVertex(edge.v1, owner) && CheckVertex(edge.v2, owner))
                     return true;
                 }
             }
@@ -181,20 +187,8 @@ public class Edge
     }
     public void PlaceBuilding(BuildingType type, PlayerNetwork owner)
     {   
-        if(!CheckValid(owner)) return;
-        Road road = null;
-        if (type == BuildingType.Road)
-        {
-            road = Object.Instantiate(CatanMap.instance.roadPrefab, midPosition + new Vector3(-0.5f, 0.55f, 0), Quaternion.identity).GetComponent<Road>();
-            road.Initialize(owner);
-            if (!road.CanPlace(building))
-            {
-                Object.Destroy(road.gameObject);
-                Debug.Log("Chi được xay road"); 
-                return;
-            }
-        }
-        else return;
+        Road road = CanBuild(type, owner);
+        if(road == null) return;
         road.GetComponent<SpriteRenderer>().color = owner.color;
         if(v1.position.x > v2.position.x && v1.position.y < v2.position.y)
         {
@@ -211,6 +205,27 @@ public class Edge
         }
         building = road;
         NetworkServer.Spawn(building.gameObject);  
+    }
+
+    public Road CanBuild(BuildingType type, PlayerNetwork owner, bool gialap=false)
+    {   
+        if(!CheckValid(owner)) return null;
+        if(TurnManager.instance.is_Setup && !TurnManager.instance.reverseOrder && owner.numRoad >= 1) return null;
+        else if(TurnManager.instance.is_Setup && TurnManager.instance.reverseOrder && owner.numRoad >= 2) return null;
+        Road road = null;
+        if (type == BuildingType.Road)
+        {
+            road = Object.Instantiate(CatanMap.instance.roadPrefab, midPosition + new Vector3(-0.5f, 0.55f, 0), Quaternion.identity).GetComponent<Road>();
+            road.Initialize(owner);
+            if (!road.CanPlace(building, gialap))
+            {
+                Object.Destroy(road.gameObject);
+                return null;
+            }
+        }
+        else return null;
+        if(gialap && road != null) Object.Destroy(road.gameObject);
+        return road;
     }
     public string PrintInfo()
     {   

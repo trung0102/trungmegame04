@@ -131,6 +131,26 @@ public class CatanMap : NetworkBehaviour
         return false;
     }
 
+        [Server]
+    public bool BOTBuild(PlayerNetwork player, Vector3 mouseWorldPos)
+    {
+        if(building != BuildingType.None)
+        {
+            if(building == BuildingType.Road)
+            {
+                Edge edge = edgeDict[mouseWorldPos];
+                edge.PlaceBuilding(building, player);
+            }
+            else
+            {
+                Vertex vertex = vertexDict[mouseWorldPos];
+                vertex.PlaceBuilding(building, player);
+            }
+            return true;
+        }
+        return false;
+    }
+
     [Server]
     public void CollectResources(int finalValue)
     {

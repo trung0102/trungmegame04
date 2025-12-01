@@ -9,17 +9,20 @@ public class PlayerNetwork : NetworkBehaviour
     public readonly SyncList<Resource> resources = new SyncList<Resource>();
     public List<Resource> currentResources = new List<Resource>();
     public int numHouse = 0;
+    public int numRoad = 0;
+    protected bool pause = false;
+    public bool isBot = false;
 
     [SyncVar(hook = nameof(OnColorChanged))] public Color color = Color.red;
     [SyncVar(hook = nameof(OnIndexChanged))] public int playerIndex = -1;
-    private int index = 1;
+    protected int index = 1;
 
-    private BuildingType selectedBuilding = BuildingType.None;
-    private void Awake()
+    protected BuildingType selectedBuilding = BuildingType.None;
+    protected virtual void Awake()
     {
         resources.Callback += OnHandUpdated;
     }
-    private void Update()
+    protected virtual void Update()
     {   
         if (!isLocalPlayer) return;
         if(!isMyTurn()) return;
@@ -54,7 +57,7 @@ public class PlayerNetwork : NetworkBehaviour
         Debug.Log($"[Local Player {playerIndex}] Connected");
     }
 
-    private bool isMyTurn()
+    protected bool isMyTurn()
     {   
         if (TurnManager.instance == null)
         return false;
@@ -85,29 +88,38 @@ public class PlayerNetwork : NetworkBehaviour
     }
 
     [Server]
-    public int PayCost(Dictionary<ResourceType, int> cost)
-    {   
-        if(numHouse >= 4)
+    public int PayCost(Dictionary<ResourceType, int> cost, BuildingType buildingType, bool gialap = false)
+    {  
+        if(!((numHouse < 2 && buildingType == BuildingType.Settlement) || (numRoad < 2 && buildingType == BuildingType.Road)))
         {
             foreach (var kv in cost)
             {
                 Resource res = GetResByName(kv.Key);
                 if (res.number < kv.Value)
+                {
+                    Debug.Log("Không đủ Cost để xây");
                     return -1;
-            }
-        }
-        numHouse ++;
-        foreach (var kv in cost)
-        {
-            RemoveResource(kv.Key, kv.Value);
-        }
+                }
 
+                    
+            }
+            if (!gialap)
+            {
+                foreach (var kv in cost)
+                {
+                    RemoveResource(kv.Key, kv.Value);
+                }
+            }
+            
+        }
+        
+        if(buildingType == BuildingType.Settlement && !gialap) numHouse ++;
+        else if(buildingType == BuildingType.Road && !gialap) numRoad ++;
         return numHouse;
     }
     [Server]
     public void RemoveResource(ResourceType resourceName, int amount = 1)
-    {   
-        if(numHouse <= 4) return;
+    {
         Resource res = GetResByName(resourceName);
         resources.Remove(res);
         res.number -= amount;
@@ -129,9 +141,9 @@ public class PlayerNetwork : NetworkBehaviour
     public void CmdRollDice()
     {
         DiceController.instance.ServerRollDice();
-        GameButtonManager.instance.TargetActiveButtons(connectionToClient);
+        if(!pause) GameButtonManager.instance.TargetActiveButtons(connectionToClient);
     }
-    private void UpdateDiceController(Vector3 mousePos)
+    protected void UpdateDiceController(Vector3 mousePos)
     {
         // Kiểm tra có click trúng GameObject này không
         Collider2D col = DiceController.instance.GetComponent<Collider2D>();
@@ -150,14 +162,40 @@ public class PlayerNetwork : NetworkBehaviour
     {   
         if(!isMyTurn()) return;
         OnClickNone();
-        TurnManager.instance.AdvanceTurn();
         GameButtonManager.instance.RpcUpdateUIAfterEndTurn();
+        TurnManager.instance.AdvanceTurn();
     }
     [Command]
     public void CmdPause()
     {
-        Debug.Log($"[Server] Player {playerIndex} PAUSEEEE");
+        // Debug.Log($"[Server] Player {playerIndex} PAUSEEEE");
+        // pause = true;
         // GameButtonManager.instance.RpcUpdateUIAfterPause();
+        // Pause();
+        Vector3 spawnPos = Vector3.zero; 
+        BotNetwork bot = Instantiate(AIManager.instance.botPrefab, spawnPos, Quaternion.identity).GetComponent<BotNetwork>();
+        NetworkServer.Spawn(bot.gameObject);
+        Debug.Log($"[Server] Spawn Bot");
+    }
+    [Command]
+    public void CmdContinue()
+    {
+        Debug.Log($"[Server] Player {playerIndex} Continue");
+        pause = false;
+        // GameButtonManager.instance.RpcUpdateUIAfterPause();
+        Continue();
+    }
+
+    [Server]
+    public void Pause()
+    {
+        DiceController.instance.SetCanRoll(false);
+        GameButtonManager.instance.RpcUpdateUIAfterPause();
+    }
+    [Server]
+    public void Continue()
+    {
+        DiceController.instance.SetCanRoll(true);
     }
 
     public void OnClickBuildSettlement()
@@ -197,7 +235,7 @@ public class PlayerNetwork : NetworkBehaviour
     {
         Debug.Log($"Player index: {newValue}");
     }
-    private void OnHandUpdated(SyncList<Resource>.Operation op, int index, Resource  oldItem, Resource newItem)
+    protected virtual void OnHandUpdated(SyncList<Resource>.Operation op, int index, Resource  oldItem, Resource newItem)
     {
         if (!isLocalPlayer) return;
         List<int> hand = new List<int>();
@@ -213,7 +251,6 @@ public class PlayerNetwork : NetworkBehaviour
         {
             currentResources.Add(new Resource { resourceName = res.resourceName, number = res.number });
         }
-        this.index++;
         HandManager.instance.UpdateHandUI(hand);
     }
 }

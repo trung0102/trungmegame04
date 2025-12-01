@@ -15,14 +15,13 @@ public class City : Settlement
         return 2;   // City produce gấp đôi
     }
 
-    public override bool CanPlace(Building build)
+    public override bool CanPlace(Building build, bool gialap = false)
     {
-        int numHouse = owner.PayCost(Cost);
+        int numHouse = owner.PayCost(Cost, Type, gialap);
         if(numHouse != -1)
         {
             if(build.Type == BuildingType.Settlement) return true;
         }
-        Debug.Log("Không đủ Cost để xây City");
         return false;
     }
 
